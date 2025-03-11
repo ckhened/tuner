@@ -1,0 +1,5 @@
+{
+	"vllm": "vllm:v0.7.3",
+	"benchmark": "vllm:v0.7.3",
+	"dq": "dq:ch"
+}
