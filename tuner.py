@@ -6,6 +6,7 @@ import logging
 import subprocess
 import shlex
 import time
+import requests
 
 
 MODEL_DIR_BASE = os.getcwd()+"/models"
@@ -51,6 +52,9 @@ def stop_vllm(numa_conf):
         except Exception as e:
             logging.exception(f"Error stopping container {container_name}, exception encountered is {e}")
             #sys.exit(1)
+
+    logging.info("Waiting for 15s after stopping and removing vllm containers")
+    time.sleep(15)
 
 
 def get_model_res_dir(model):
@@ -98,11 +102,23 @@ def launch_vllm(test, numa_conf, containers_conf):
         container_name = f"vllm{node}"
         kv_cache = test['test_parameters']['kv_cache']
 
-        docker_command = f"docker run -d --rm -p {port}:8000 --cpuset-cpus={cpuset} --cpuset-mems={mem} -e HUGGING_FACE_HUB_TOKEN={HUGGING_FACE_HUB_TOKEN} -e VLLM_CPU_KVCACHE_SPACE={kv_cache} -v {model_dir}:/root/.cache --name {container_name} --ipc=host {container_image} --trust-remote-code --device cpu --dtype {dtype} --enforce-eager --tensor-parallel-size 1 --served-model-name {served_model_name} --model {model}"
+        docker_command = f"docker run -d --rm -p {port}:8000 --cpuset-cpus={cpuset} --cpuset-mems={mem} -e HUGGING_FACE_HUB_TOKEN={HUGGING_FACE_HUB_TOKEN} -e VLLM_CPU_KVCACHE_SPACE={kv_cache} -v {model_dir}:/root/.cache --name {container_name} --ipc=host {container_image} --trust-remote-code --device cpu --dtype {dtype} --tensor-parallel-size 1 --enforce-eager --served-model-name {served_model_name} --model {model}"
     
         launch_container(docker_command)
     logging.info("Waiting 60s for all VLLM containers to initialize")
     time.sleep(60)
+    for _ in range(5):
+        try: 
+            response = requests.get("http://localhost:8000/version", timeout=2)
+            if response.status_code == 200:
+                logging.info("VLLM endpoints are available")
+                return
+        except (requests.ConnectionError, requests.Timeout) as  e:
+            logging.info("VLLM not yet initialized, retrying in 60 seconds")
+
+        time.sleep(60)
+    logging.info("Exiting test, VLLM endpoints are not available. Check vllm0 container llogs")
+    sys.exit(1)
 
 
 def prepare_tests(numa_conf, models_conf, tokens_conf):
