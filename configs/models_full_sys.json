@@ -1,0 +1,98 @@
+[
+	{
+		"model": "meta-llama/Llama-3.2-1B",
+		"dtype": "bfloat16",
+		"test_parameters": {
+			"kv_cache": 32,
+			"tpot_kpi": 100,
+		        "ttft_kpi": 4000,
+			"start_concurrency": 16,
+		        "concurrency_step": 16	
+		},
+		"quantize": []
+	},
+	{
+		"model": "meta-llama/Llama-3.2-3B-Instruct",
+		"dtype": "bfloat16",
+		"test_parameters": {
+			"kv_cache": 64,
+			"tpot_kpi": 100,
+		        "ttft_kpi": 4000,
+			"start_concurrency": 8,
+		        "concurrency_step": 8	
+		},
+		"quantize": []
+	},
+	{
+		"model": "meta-llama/Llama-2-7b-chat-hf",
+		"dtype": "bfloat16",
+		"test_parameters": {
+			"kv_cache": 128,
+			"tpot_kpi": 100,
+		        "ttft_kpi": 4000,
+			"start_concurrency": 4,
+		        "concurrency_step": 4	
+		},
+		"quantize": []
+	},
+	{
+		"model": "meta-llama/Llama-3.1-8B-Instruct",
+		"dtype": "bfloat16",
+		"test_parameters": {
+			"kv_cache": 128,
+			"tpot_kpi": 100,
+		        "ttft_kpi": 4000,
+			"start_concurrency": 4,
+		        "concurrency_step": 4	
+		},
+		"quantize": []
+	},
+	{
+		"model": "meta-llama/Llama-2-13b-chat-hf",
+		"dtype": "bfloat16",
+		"test_parameters": {
+			"kv_cache": 192,
+			"tpot_kpi": 100,
+		        "ttft_kpi": 4000,
+			"start_concurrency": 2,
+		        "concurrency_step": 2	
+		},
+		"quantize": []
+	},
+	{
+		"model": "Qwen/Qwen2.5-1.5B-Instruct",
+		"dtype": "bfloat16",
+		"test_parameters": {
+			"kv_cache": 32,
+			"tpot_kpi": 100,
+		        "ttft_kpi": 4000,
+			"start_concurrency": 16,
+		        "concurrency_step": 16	
+		},
+		"quantize": []
+	},
+	{
+		"model": "Qwen/Qwen2.5-7B-Instruct",
+		"dtype": "bfloat16",
+		"test_parameters": {
+			"kv_cache": 128,
+			"tpot_kpi": 100,
+		        "ttft_kpi": 4000,
+			"start_concurrency": 4,
+		        "concurrency_step": 4	
+		},
+		"quantize": []
+	},
+	{
+		"model": "Qwen/Qwen2.5-14B-Instruct-1M",
+		"dtype": "bfloat16",
+		"test_parameters": {
+			"kv_cache": 192,
+			"tpot_kpi": 100,
+		        "ttft_kpi": 4000,
+			"start_concurrency": 2,
+		        "concurrency_step": 2	
+		},
+		"quantize": []
+	}
+]
