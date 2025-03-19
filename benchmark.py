@@ -115,13 +115,13 @@ def launch_vllm(test, numa_conf, containers_conf):
         port = 8000 + node + 1
         container_name = f"vllm{node}"
         kv_cache = test['test_parameters']['kv_cache']
-        node_cpus = ["0-95,192-287", "96-191,288-383"]
+        node_cpus = n['node']
         compile_config = 3
         OMP_ENV = "-e KMP_BLOCKTIME=1 -e KMP_TPAUSE=0 -e KMP_SETTINGS=0 -e KMP_FORKJOIN_BARRIER_PATTERN=dist,dist -e KMP_PLAIN_BARRIER_PATTERN=dist,dist " 
         OMP_ENV += f"-e KMP_REDUCTION_BARRIER_PATTERN=dist,dist -e VLLM_V1_USE=1 -e VLLM_CPU_OMP_THREADS_BIND={cpuset}"
 
 #        docker_command = f"docker run -d --rm {PROXY_ENV} -p {port}:8000 --cpuset-cpus={cpuset} --cpuset-mems={mem} -e HUGGING_FACE_HUB_TOKEN={HUGGING_FACE_HUB_TOKEN} -e VLLM_CPU_KVCACHE_SPACE={kv_cache} -v {model_dir}:/root/.cache --name {container_name} --ipc=host {container_image} --trust-remote-code --device cpu --dtype {dtype} --tensor-parallel-size 1 --enforce-eager --served-model-name {served_model_name} --model {model}"
-        docker_command = f"docker run -d --rm --privileged=True {PROXY_ENV} -p {port}:8000 --network vllm_nginx --cpuset-cpus={node_cpus[i]} --cpuset-mems={mem} {OMP_ENV} -e HUGGING_FACE_HUB_TOKEN={HUGGING_FACE_HUB_TOKEN} -e VLLM_CPU_KVCACHE_SPACE={kv_cache} -v {model_dir}:/root/.cache --name {container_name} --ipc=host {container_image} --trust-remote-code --device cpu --dtype {dtype} --tensor-parallel-size 1 --enforce-eager --served-model-name {served_model_name} --model {model} -O{compile_config}"
+        docker_command = f"docker run -d --rm --privileged=True {PROXY_ENV} -p {port}:8000 --network vllm_nginx --cpuset-cpus={node_cpus} --cpuset-mems={mem} {OMP_ENV} -e HUGGING_FACE_HUB_TOKEN={HUGGING_FACE_HUB_TOKEN} -e VLLM_CPU_KVCACHE_SPACE={kv_cache} -v {model_dir}:/root/.cache --name {container_name} --ipc=host {container_image} --trust-remote-code --device cpu --dtype {dtype} --tensor-parallel-size 1 --enforce-eager --served-model-name {served_model_name} --model {model} -O{compile_config}"
     
         run_docker_cmd(docker_command)
     logging.info("Waiting 60s for all VLLM containers to initialize")
@@ -130,7 +130,7 @@ def launch_vllm(test, numa_conf, containers_conf):
     for i, n in enumerate(numa_conf):
         ready = False
         port = 8000 + i + 1
-        for _ in range(30):
+        for _ in range(75):
             try: 
                 response = requests.get(f"http://localhost:{port}/version", timeout=2)
                 if response.status_code == 200:

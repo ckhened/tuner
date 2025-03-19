@@ -10,6 +10,7 @@ import requests
 
 
 MODEL_DIR_BASE = os.getcwd()+"/models"
+NGINX_DIR_BASE = os.getcwd()+"/nginx"
 RESULTS_DIR_BASE = os.getcwd()+"/results/result_"+str(int(time.time()))
 SERVED_MODEL_NAME = "model_in_test"
 HUGGING_FACE_HUB_TOKEN = os.environ.get('HUGGING_FACE_HUB_TOKEN', "")
@@ -27,32 +28,37 @@ logging.basicConfig(
         )
 
 
-def launch_container(docker_command):
-    logging.debug(f"Launching container with command: {docker_command}")
+def run_docker_cmd(docker_command, is_exit=True):
+    logging.debug(f"Running docker command: {docker_command}")
     try:
         process = subprocess.Popen(shlex.split(docker_command), shell=False)
         process.wait()
         #result = subprocess.run("ls", check=True, capture_output=True, text=True)
     except Exception as e:
-        logging.exception(f"Error launching container, exception encountered is {e}")
-        sys.exit(1)
+        logging.exception(f"Error running docker cmd, exception encountered is {e}")
+        if is_exit:
+            sys.exit(1)
     #return result
 
 
+def stop_nginx():
+    docker_command1 = "docker stop nginx-lb"
+    docker_command2 = "docker rm nginx-lb"
+    run_docker_cmd(docker_command1)
+    run_docker_cmd(docker_command2, is_exit=False)
+
+
 def stop_vllm(numa_conf):
+    stop_nginx()
+
     for i in range(len(numa_conf)):
         container_name = 'vllm'+str(i)
         docker_command1 = f"docker stop {container_name}"
         docker_command2 = f"docker rm {container_name}"
         logging.debug(f"Stopping and removing container {container_name}")
-        try:
-            process = subprocess.Popen(shlex.split(docker_command1), shell=False)
-            process.wait()
-            process = subprocess.Popen(shlex.split(docker_command2), shell=False)
-            process.wait()
-        except Exception as e:
-            logging.exception(f"Error stopping container {container_name}, exception encountered is {e}")
-            #sys.exit(1)
+        run_docker_cmd(docker_command1)
+        run_docker_cmd(docker_command2, is_exit=False)
+        
 
     logging.info("Waiting for 15s after stopping and removing vllm containers")
     time.sleep(15)
@@ -85,9 +91,16 @@ def run_benchmark(model, token_comb, containers_conf, is_warmup):
     else:
         docker_command = f"docker run -it --rm --net=host {PROXY_ENV} -v {model_dir}:/root/.cache -v {results_dir}:/results -e HUGGING_FACE_HUB_TOKEN={HUGGING_FACE_HUB_TOKEN} --entrypoint=python3 {container_image} /workspace/vllm/benchmarks/benchmark_serving.py --port 8000 --dataset-name random --request-rate {concurrency} --num-prompts {num_prompts} --random-input-len {inp_tokens} --random-output-len {op_tokens} --ignore-eos --percentile-metrics ttft,tpot,itl,e2el --served-model-name {served_model_name} --metric-percentiles 50,90,99 --max-concurrency {concurrency} --save-result --result-filename {results_file_container} --model {model}"
 
-    launch_container(docker_command)
+    run_docker_cmd(docker_command)
     return results_file_host
     
+
+def launch_nginx():
+    logging.info("Launching nginx...")
+    docker_command = f"docker run --rm -itd -p 8000:80 --network vllm_nginx -v {NGINX_DIR_BASE}/nginx_conf/:/etc/nginx/conf.d/ --name nginx-lb nginx-lb:latest"
+    run_docker_cmd(docker_command)
+    time.sleep(2)
+
 
 def launch_vllm(test, numa_conf, containers_conf):
     for i, n in enumerate(numa_conf):
@@ -99,34 +112,40 @@ def launch_vllm(test, numa_conf, containers_conf):
         dtype = test['dtype']
         served_model_name = SERVED_MODEL_NAME
         model = test['model']
-        port = 8000 + node
+        port = 8000 + node + 1
         container_name = f"vllm{node}"
         kv_cache = test['test_parameters']['kv_cache']
-        node0_cpus = "0-95,192-287"
-        node1_cpus = "96-191,288-383"
+        node_cpus = n['node']
         compile_config = 3
         OMP_ENV = "-e KMP_BLOCKTIME=1 -e KMP_TPAUSE=0 -e KMP_SETTINGS=0 -e KMP_FORKJOIN_BARRIER_PATTERN=dist,dist -e KMP_PLAIN_BARRIER_PATTERN=dist,dist " 
         OMP_ENV += f"-e KMP_REDUCTION_BARRIER_PATTERN=dist,dist -e VLLM_V1_USE=1 -e VLLM_CPU_OMP_THREADS_BIND={cpuset}"
 
 #        docker_command = f"docker run -d --rm {PROXY_ENV} -p {port}:8000 --cpuset-cpus={cpuset} --cpuset-mems={mem} -e HUGGING_FACE_HUB_TOKEN={HUGGING_FACE_HUB_TOKEN} -e VLLM_CPU_KVCACHE_SPACE={kv_cache} -v {model_dir}:/root/.cache --name {container_name} --ipc=host {container_image} --trust-remote-code --device cpu --dtype {dtype} --tensor-parallel-size 1 --enforce-eager --served-model-name {served_model_name} --model {model}"
-        docker_command = f"docker run -d --rm --privileged=True {PROXY_ENV} -p {port}:8000 --cpuset-cpus={node0_cpus} --cpuset-mems={mem} {OMP_ENV} -e HUGGING_FACE_HUB_TOKEN={HUGGING_FACE_HUB_TOKEN} -e VLLM_CPU_KVCACHE_SPACE={kv_cache} -v {model_dir}:/root/.cache --name {container_name} --ipc=host {container_image} --trust-remote-code --device cpu --dtype {dtype} --tensor-parallel-size 1 --enforce-eager --served-model-name {served_model_name} --model {model} -O{compile_config}"
+        docker_command = f"docker run -d --rm --privileged=True {PROXY_ENV} -p {port}:8000 --network vllm_nginx --cpuset-cpus={node_cpus} --cpuset-mems={mem} {OMP_ENV} -e HUGGING_FACE_HUB_TOKEN={HUGGING_FACE_HUB_TOKEN} -e VLLM_CPU_KVCACHE_SPACE={kv_cache} -v {model_dir}:/root/.cache --name {container_name} --ipc=host {container_image} --trust-remote-code --device cpu --dtype {dtype} --tensor-parallel-size 1 --enforce-eager --served-model-name {served_model_name} --model {model} -O{compile_config}"
     
-        launch_container(docker_command)
+        run_docker_cmd(docker_command)
     logging.info("Waiting 60s for all VLLM containers to initialize")
     time.sleep(60)
-    for _ in range(30):
-        try: 
-            response = requests.get("http://localhost:8000/version", timeout=2)
-            if response.status_code == 200:
-                logging.info("VLLM endpoints are available")
-                return
-        except (requests.ConnectionError, requests.Timeout) as  e:
-            logging.info("VLLM not yet initialized, retrying in 60 seconds")
 
-        time.sleep(60)
-    logging.info("Exiting test, VLLM endpoints are not available. Check vllm0 container llogs")
-    sys.exit(1)
+    for i, n in enumerate(numa_conf):
+        ready = False
+        port = 8000 + i + 1
+        for _ in range(75):
+            try: 
+                response = requests.get(f"http://localhost:{port}/version", timeout=2)
+                if response.status_code == 200:
+                    logging.info("VLLM endpoints are available")
+                    ready = True
+                    break
+            except (requests.ConnectionError, requests.Timeout) as  e:
+                logging.info("VLLM not yet initialized, retrying in 60 seconds")
 
+            time.sleep(60)
+        if not ready:
+            logging.info("Exiting test, VLLM endpoints are not available. Check vllm0 container llogs")
+            sys.exit(1)
+
+    launch_nginx()
 
 def prepare_tests(numa_conf, models_conf, tokens_conf):
     tests = []
@@ -160,7 +179,7 @@ def run_download(numa_conf, container_image):
         os.makedirs(model_dir)
 
     docker_command = f"docker run --rm {PROXY_ENV} -e HUGGING_FACE_HUB_TOKEN={HUGGING_FACE_HUB_TOKEN} -v {pwd}/configs:/workspace/configs -v {model_dir}:/root/.cache {container_image}"
-    launch_container(docker_command)
+    run_docker_cmd(docker_command)
 
     
 def get_json(fn):
@@ -190,9 +209,6 @@ def get_configs():
 def main():
     #Read all configs
     numa_conf, models_conf, tokens_conf, containers_conf = get_configs()
-
-    #Use 1 NUMA for tuner
-    numa_conf = [numa_conf[0]]
 
     #Download and quantize models
     run_download(numa_conf, containers_conf['dq'])
