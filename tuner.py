@@ -195,7 +195,7 @@ def get_json(fn):
 
 def get_configs():
     numa_fn = "configs/numa.json"
-    models_fn = "configs/models.json"
+    models_fn = "configs/models_full_sys.json"
     tokens_fn = "configs/tokens.json"
     containers_fn = "configs/containers.json"
 

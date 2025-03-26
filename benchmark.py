@@ -71,7 +71,7 @@ def get_model_res_dir(model):
 
 def run_benchmark(model, token_comb, containers_conf, is_warmup):
     container_image = containers_conf['benchmark']
-    concurrency = token_comb['concurrency'] * 2
+    concurrency = token_comb['concurrency']
     inp_tokens = token_comb['inp_tokens']
     op_tokens = token_comb['op_tokens']
     served_model_name = SERVED_MODEL_NAME
@@ -97,7 +97,7 @@ def run_benchmark(model, token_comb, containers_conf, is_warmup):
 
 def launch_nginx():
     logging.info("Launching nginx...")
-    docker_command = f"docker run --rm -itd -p 8000:80 --network vllm_nginx -v {NGINX_DIR_BASE}/nginx_conf/:/etc/nginx/conf.d/ --name nginx-lb nginx-lb:latest"
+    docker_command = f"docker run --rm -itd --cpuset-cpus 0-47,96-144 -p 8000:80 --network vllm_nginx -v {NGINX_DIR_BASE}/nginx_conf/:/etc/nginx/conf.d/ --name nginx-lb nginx-lb:latest"
     run_docker_cmd(docker_command)
     time.sleep(2)
 
