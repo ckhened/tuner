@@ -1,0 +1,16 @@
+{
+	"vllm": {
+		"image": "vllm:ipex-cpu-ww09"
+	},
+	"benchmark": {
+		"image": "vllm:v0.7.3",
+		"cpuset": "48-51,145-148"
+	},
+	"nginx": {
+		"image": "nginx-lb:latest",
+		"cpuset": "0-47,96-144"
+	},
+	"dq": {
+		"image": "dq:ch"
+	}
+}
