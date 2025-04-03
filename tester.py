@@ -279,7 +279,7 @@ def main(args):
     #Read all configs
     conf = get_configs(args)
 
-    if args.model and (not args.test_parameters or not args.launch_vllm):
+    if args.model and not args.test_parameters and not args.launch_vllm:
         for m in conf['models']:
             if m['model'] == args.model:
                 logging.info(m)
@@ -294,7 +294,15 @@ def main(args):
         sys.exit(1)
 
     if args.launch_vllm:
-        launch_vllm(test, conf['numa'], conf['containers'])
+        mp = None
+        for m in conf['models']:
+            if m['model'] == args.model:
+                mp = m
+                break
+        if mp == None:
+            logging.error("specified model {args.model} not found in {args.platform}/models.json")
+            sys.exit(1)
+        launch_vllm(mp, conf['numa'], conf['containers'])
         logging.info("Done launching vllm containers")
         sys.exit(0)
 
