@@ -1,248 +1,652 @@
 [
-        {
-                "model": "meta-llama/Llama-3.2-1B",
-                "dtype": "bfloat16",
-                "test_parameters": {
-                        "kv_cache": 32,
-			"sweep_tests": [
-				{
-                                        "tpot_kpi": 100,
-                                        "ttft_kpi": 6000,
-                                        "start_concurrency": 544,
-                                        "concurrency_step": 8,
-					"inp_tokens": 128,
-					"op_tokens": 1024
-				},
-				{
-                                        "tpot_kpi": 100,
-                                        "ttft_kpi": 6000,
-                                        "start_concurrency": 240,
-                                        "concurrency_step": 8,
-					"inp_tokens": 1024,
-					"op_tokens": 1024
-				},
-                                {
-                                        "tpot_kpi": 100,
-                                        "ttft_kpi": 6000,
-                                        "start_concurrency": 80,
-                                        "concurrency_step": 8,
-                                        "inp_tokens": 2048,
-                                        "op_tokens": 1024
-                                }
-			],
-			"benchmark_tests": [
-				{
-					"inp_tokens": 128,
-					"op_tokens": 1024,
-					"concurrency": 576
-				},
-				{
-					"inp_tokens": 1024,
-					"op_tokens": 1024,
-					"concurrency": 272
-				},
-                                {
-                                        "inp_tokens": 2048,
-                                        "op_tokens": 1024,
-                                        "concurrency": 112
-                                }
-			]
+    {
+        "model": "Qwen/Qwen2.5-1.5B-Instruct",
+        "dtype": "bfloat16",
+        "test_parameters": {
+            "kv_cache": 32,
+            "sweep_tests": [
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": 288,
+                    "concurrency_step": 8,
+                    "inp_tokens": 128,
+                    "op_tokens": 1024
                 },
-                "benchmark_test_parameters": {
-
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": 160,
+                    "concurrency_step": 8,
+                    "inp_tokens": 1024,
+                    "op_tokens": 1024
+                },
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": 64,
+                    "concurrency_step": 8,
+                    "inp_tokens": 2048,
+                    "op_tokens": 1024
                 }
-        },
-        {
-                "model": "meta-llama/Llama-3.2-3B-Instruct",
-                "dtype": "bfloat16",
-                "test_parameters": {
-                        "kv_cache": 64,
-                        "tpot_kpi": 100,
-                        "ttft_kpi": 6000,
-                        "start_concurrency": 16,
-                        "concurrency_step": 16
+            ],
+            "benchmark_tests": [
+                {
+                    "inp_token": 128,
+                    "op_tokens": 1024,
+                    "concurrency": 320
                 },
-                "quantize": []
-        },
-        {
-                "model": "meta-llama/Llama-2-7b-chat-hf",
-                "dtype": "bfloat16",
-                "test_parameters": {
-                        "kv_cache": 128,
-                        "tpot_kpi": 100,
-                        "ttft_kpi": 6000,
-                        "start_concurrency": 8,
-                        "concurrency_step": 8
+                {
+                    "inp_token": 1024,
+                    "op_tokens": 1024,
+                    "concurrency": 184
                 },
-                "quantize": []
-        },
-        {
-                "model": "meta-llama/Llama-3.1-8B-Instruct",
-                "dtype": "bfloat16",
-                "test_parameters": {
-                        "kv_cache": 128,
-                        "tpot_kpi": 100,
-                        "ttft_kpi": 6000,
-                        "start_concurrency": 8,
-                        "concurrency_step": 8
-                },
-                "quantize": []
-        },
-        {
-                "model": "meta-llama/Llama-2-13b-chat-hf",
-                "dtype": "bfloat16",
-                "test_parameters": {
-                        "kv_cache": 192,
-                        "tpot_kpi": 100,
-                        "ttft_kpi": 6000,
-                        "start_concurrency": 4,
-                        "concurrency_step": 4
-                },
-                "quantize": []
-        },
-        {
-                "model": "Qwen/Qwen2.5-1.5B-Instruct",
-                "dtype": "bfloat16",
-                "test_parameters": {
-                        "kv_cache": 32,
-                        "tpot_kpi": 100,
-                        "ttft_kpi": 6000,
-                        "start_concurrency": 64,
-                        "concurrency_step": 32
-                },
-                "quantize": []
-        },
-        {
-                "model": "Qwen/Qwen2.5-7B-Instruct",
-                "dtype": "bfloat16",
-                "test_parameters": {
-                        "kv_cache": 128,
-                        "tpot_kpi": 100,
-                        "ttft_kpi": 6000,
-                        "start_concurrency": 8,
-                        "concurrency_step": 8
-                },
-                "quantize": []
-        },
-        {
-                "model": "Qwen/Qwen2.5-14B-Instruct-1M",
-                "dtype": "bfloat16",
-                "test_parameters": {
-                        "kv_cache": 192,
-                        "tpot_kpi": 100,
-                        "ttft_kpi": 6000,
-                        "start_concurrency": 4,
-                        "concurrency_step": 4
-                },
-                "quantize": []
-        },
-        {
-                "model": "tiiuae/Falcon3-1B-Instruct",
-                "dtype": "bfloat16",
-                "test_parameters": {
-                        "kv_cache": 32,
-                        "tpot_kpi": 100,
-                        "ttft_kpi": 6000,
-                        "start_concurrency": 64,
-                        "concurrency_step": 32
-                },
-                "quantize": []
-        },
-        {
-                "model": "tiiuae/Falcon3-3B-Instruct",
-                "dtype": "bfloat16",
-                "test_parameters": {
-                        "kv_cache": 64,
-                        "tpot_kpi": 100,
-                        "ttft_kpi": 6000,
-                        "start_concurrency": 16,
-                        "concurrency_step": 16
-                },
-                "quantize": []
-        },
-        {
-                "model": "tiiuae/Falcon3-7B-Instruct",
-                "dtype": "bfloat16",
-                "test_parameters": {
-                        "kv_cache": 128,
-                        "tpot_kpi": 100,
-                        "ttft_kpi": 6000,
-                        "start_concurrency": 8,
-                        "concurrency_step": 8
-                },
-                "quantize": []
-        },
-        {
-                "model": "tiiuae/Falcon3-10B-Instruct",
-                "dtype": "bfloat16",
-                "test_parameters": {
-                        "kv_cache": 192,
-                        "tpot_kpi": 100,
-                        "ttft_kpi": 6000,
-                        "start_concurrency": 4,
-                        "concurrency_step": 4
-                },
-                "quantize": []
-        },
-        {
-                "model": "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
-                "dtype": "bfloat16",
-                "test_parameters": {
-                        "kv_cache": 32,
-                        "tpot_kpi": 100,
-                        "ttft_kpi": 6000,
-                        "start_concurrency": 64,
-                        "concurrency_step": 32
-                },
-                "quantize": []
-        },
-        {
-                "model": "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B",
-                "dtype": "bfloat16",
-                "test_parameters": {
-                        "kv_cache": 128,
-                        "tpot_kpi": 100,
-                        "ttft_kpi": 6000,
-                        "start_concurrency": 8,
-                        "concurrency_step": 8
-                },
-                "quantize": []
-        },
-        {
-                "model": "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B",
-                "dtype": "bfloat16",
-                "test_parameters": {
-                        "kv_cache": 192,
-                        "tpot_kpi": 100,
-                        "ttft_kpi": 6000,
-                        "start_concurrency": 4,
-                        "concurrency_step": 4
-                },
-                "quantize": []
-        },
-        {
-                "model": "EleutherAI/gpt-j-6b",
-                "dtype": "bfloat16",
-                "test_parameters": {
-                        "kv_cache": 128,
-                        "tpot_kpi": 100,
-                        "ttft_kpi": 6000,
-                        "start_concurrency": 8,
-                        "concurrency_step": 8
-                },
-                "quantize": []
-        },
-        {
-                "model": "mistralai/Ministral-8B-Instruct-2410",
-                "dtype": "bfloat16",
-                "test_parameters": {
-                        "kv_cache": 128,
-                        "tpot_kpi": 100,
-                        "ttft_kpi": 6000,
-                        "start_concurrency": 8,
-                        "concurrency_step": 8
-                },
-                "quantize": []
+                {
+                    "inp_token": 2048,
+                    "op_tokens": 1024,
+                    "concurrency": 96
+                }
+            ]
         }
+    },
+    {
+        "model": "Qwen/Qwen2.5-7B-Instruct",
+        "dtype": "bfloat16",
+        "test_parameters": {
+            "kv_cache": 128,
+            "sweep_tests": [
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": 0,
+                    "concurrency_step": 4,
+                    "inp_tokens": 128,
+                    "op_tokens": 1024
+                },
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": -8,
+                    "concurrency_step": 4,
+                    "inp_tokens": 1024,
+                    "op_tokens": 1024
+                },
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": -8,
+                    "concurrency_step": 4,
+                    "inp_tokens": 2048,
+                    "op_tokens": 1024
+                }
+            ],
+            "benchmark_tests": [
+                {
+                    "inp_token": 128,
+                    "op_tokens": 1024,
+                    "concurrency": 16
+                },
+                {
+                    "inp_token": 1024,
+                    "op_tokens": 1024,
+                    "concurrency": 8
+                },
+                {
+                    "inp_token": 2048,
+                    "op_tokens": 1024,
+                    "concurrency": 6
+                }
+            ]
+        }
+    },
+    {
+        "model": "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
+        "dtype": "bfloat16",
+        "test_parameters": {
+            "kv_cache": 32,
+            "sweep_tests": [
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": 288,
+                    "concurrency_step": 8,
+                    "inp_tokens": 128,
+                    "op_tokens": 1024
+                },
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": 160,
+                    "concurrency_step": 8,
+                    "inp_tokens": 1024,
+                    "op_tokens": 1024
+                },
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": 64,
+                    "concurrency_step": 8,
+                    "inp_tokens": 2048,
+                    "op_tokens": 1024
+                }
+            ],
+            "benchmark_tests": [
+                {
+                    "inp_token": 128,
+                    "op_tokens": 1024,
+                    "concurrency": 312
+                },
+                {
+                    "inp_token": 1024,
+                    "op_tokens": 1024,
+                    "concurrency": 180
+                },
+                {
+                    "inp_token": 2048,
+                    "op_tokens": 1024,
+                    "concurrency": 88
+                }
+            ]
+        }
+    },
+    {
+        "model": "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B",
+        "dtype": "bfloat16",
+        "test_parameters": {
+            "kv_cache": 64,
+            "sweep_tests": [
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": 16,
+                    "concurrency_step": 4,
+                    "inp_tokens": 128,
+                    "op_tokens": 1024
+                },
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": -8,
+                    "concurrency_step": 4,
+                    "inp_tokens": 1024,
+                    "op_tokens": 1024
+                },
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": -8,
+                    "concurrency_step": 4,
+                    "inp_tokens": 2048,
+                    "op_tokens": 1024
+                }
+            ],
+            "benchmark_tests": [
+                {
+                    "inp_token": 128,
+                    "op_tokens": 1024,
+                    "concurrency": 28
+                },
+                {
+                    "inp_token": 1024,
+                    "op_tokens": 1024,
+                    "concurrency": 8
+                },
+                {
+                    "inp_token": 2048,
+                    "op_tokens": 1024,
+                    "concurrency": 8
+                }
+            ]
+        }
+    },
+    {
+        "model": "meta-llama/Llama-2-13b-chat-hf",
+        "dtype": "bfloat16",
+        "test_parameters": {
+            "kv_cache": 192,
+            "sweep_tests": [
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": -4,
+                    "concurrency_step": 2,
+                    "inp_tokens": 128,
+                    "op_tokens": 1024
+                },
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": -4,
+                    "concurrency_step": 2,
+                    "inp_tokens": 1024,
+                    "op_tokens": 1024
+                },
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": -4,
+                    "concurrency_step": 2,
+                    "inp_tokens": 2048,
+                    "op_tokens": 1024
+                }
+            ],
+            "benchmark_tests": [
+                {
+                    "inp_token": 128,
+                    "op_tokens": 1024,
+                    "concurrency": 2
+                },
+                {
+                    "inp_token": 1024,
+                    "op_tokens": 1024,
+                    "concurrency": 2
+                },
+                {
+                    "inp_token": 2048,
+                    "op_tokens": 1024,
+                    "concurrency": 2
+                }
+            ]
+        }
+    },
+    {
+        "model": "meta-llama/Llama-2-7b-chat-hf",
+        "dtype": "bfloat16",
+        "test_parameters": {
+            "kv_cache": 128,
+            "sweep_tests": [
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": -8,
+                    "concurrency_step": 4,
+                    "inp_tokens": 128,
+                    "op_tokens": 1024
+                },
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": -8,
+                    "concurrency_step": 4,
+                    "inp_tokens": 1024,
+                    "op_tokens": 1024
+                },
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": -8,
+                    "concurrency_step": 4,
+                    "inp_tokens": 2048,
+                    "op_tokens": 1024
+                }
+            ],
+            "benchmark_tests": [
+                {
+                    "inp_token": 128,
+                    "op_tokens": 1024,
+                    "concurrency": 6
+                },
+                {
+                    "inp_token": 1024,
+                    "op_tokens": 1024,
+                    "concurrency": 6
+                },
+                {
+                    "inp_token": 2048,
+                    "op_tokens": 1024,
+                    "concurrency": 6
+                }
+            ]
+        }
+    },
+    {
+        "model": "meta-llama/Llama-3.1-8B-Instruct",
+        "dtype": "bfloat16",
+        "test_parameters": {
+            "kv_cache": 128,
+            "sweep_tests": [
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": -8,
+                    "concurrency_step": 4,
+                    "inp_tokens": 128,
+                    "op_tokens": 1024
+                },
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": -8,
+                    "concurrency_step": 4,
+                    "inp_tokens": 1024,
+                    "op_tokens": 1024
+                },
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": -8,
+                    "concurrency_step": 4,
+                    "inp_tokens": 2048,
+                    "op_tokens": 1024
+                }
+            ],
+            "benchmark_tests": [
+                {
+                    "inp_token": 128,
+                    "op_tokens": 1024,
+                    "concurrency": 6
+                },
+                {
+                    "inp_token": 1024,
+                    "op_tokens": 1024,
+                    "concurrency": 6
+                },
+                {
+                    "inp_token": 2048,
+                    "op_tokens": 1024,
+                    "concurrency": 6
+                }
+            ]
+        }
+    },
+    {
+        "model": "meta-llama/Llama-3.2-1B",
+        "dtype": "bfloat16",
+        "test_parameters": {
+            "kv_cache": 32,
+            "sweep_tests": [
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": 288,
+                    "concurrency_step": 8,
+                    "inp_tokens": 128,
+                    "op_tokens": 1024
+                },
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": 160,
+                    "concurrency_step": 8,
+                    "inp_tokens": 1024,
+                    "op_tokens": 1024
+                },
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": 64,
+                    "concurrency_step": 8,
+                    "inp_tokens": 2048,
+                    "op_tokens": 1024
+                }
+            ],
+            "benchmark_tests": [
+                {
+                    "inp_token": 128,
+                    "op_tokens": 1024,
+                    "concurrency": 316
+                },
+                {
+                    "inp_token": 1024,
+                    "op_tokens": 1024,
+                    "concurrency": 184
+                },
+                {
+                    "inp_token": 2048,
+                    "op_tokens": 1024,
+                    "concurrency": 96
+                }
+            ]
+        }
+    },
+    {
+        "model": "meta-llama/Llama-3.2-3B-Instruct",
+        "dtype": "bfloat16",
+        "test_parameters": {
+            "kv_cache": 64,
+            "sweep_tests": [
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": 64,
+                    "concurrency_step": 8,
+                    "inp_tokens": 128,
+                    "op_tokens": 1024
+                },
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": 16,
+                    "concurrency_step": 8,
+                    "inp_tokens": 1024,
+                    "op_tokens": 1024
+                },
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": 0,
+                    "concurrency_step": 8,
+                    "inp_tokens": 2048,
+                    "op_tokens": 1024
+                }
+            ],
+            "benchmark_tests": [
+                {
+                    "inp_token": 128,
+                    "op_tokens": 1024,
+                    "concurrency": 96
+                },
+                {
+                    "inp_token": 1024,
+                    "op_tokens": 1024,
+                    "concurrency": 48
+                },
+                {
+                    "inp_token": 2048,
+                    "op_tokens": 1024,
+                    "concurrency": 28
+                }
+            ]
+        }
+    },
+    {
+        "model": "tiiuae/Falcon3-10B-Instruct",
+        "dtype": "bfloat16",
+        "test_parameters": {
+            "kv_cache": 192,
+            "sweep_tests": [
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": -4,
+                    "concurrency_step": 2,
+                    "inp_tokens": 128,
+                    "op_tokens": 1024
+                },
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": -4,
+                    "concurrency_step": 2,
+                    "inp_tokens": 1024,
+                    "op_tokens": 1024
+                },
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": -4,
+                    "concurrency_step": 2,
+                    "inp_tokens": 2048,
+                    "op_tokens": 1024
+                }
+            ],
+            "benchmark_tests": [
+                {
+                    "inp_token": 128,
+                    "op_tokens": 1024,
+                    "concurrency": 2
+                },
+                {
+                    "inp_token": 1024,
+                    "op_tokens": 1024,
+                    "concurrency": 2
+                },
+                {
+                    "inp_token": 2048,
+                    "op_tokens": 1024,
+                    "concurrency": 2
+                }
+            ]
+        }
+    },
+    {
+        "model": "tiiuae/Falcon3-1B-Instruct",
+        "dtype": "bfloat16",
+        "test_parameters": {
+            "kv_cache": 32,
+            "sweep_tests": [
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": 256,
+                    "concurrency_step": 8,
+                    "inp_tokens": 128,
+                    "op_tokens": 1024
+                },
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": 96,
+                    "concurrency_step": 8,
+                    "inp_tokens": 1024,
+                    "op_tokens": 1024
+                },
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": 64,
+                    "concurrency_step": 8,
+                    "inp_tokens": 2048,
+                    "op_tokens": 1024
+                }
+            ],
+            "benchmark_tests": [
+                {
+                    "inp_token": 128,
+                    "op_tokens": 1024,
+                    "concurrency": 288
+                },
+                {
+                    "inp_token": 1024,
+                    "op_tokens": 1024,
+                    "concurrency": 128
+                },
+                {
+                    "inp_token": 2048,
+                    "op_tokens": 1024,
+                    "concurrency": 88
+                }
+            ]
+        }
+    },
+    {
+        "model": "tiiuae/Falcon3-3B-Instruct",
+        "dtype": "bfloat16",
+        "test_parameters": {
+            "kv_cache": 64,
+            "sweep_tests": [
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": 96,
+                    "concurrency_step": 8,
+                    "inp_tokens": 128,
+                    "op_tokens": 1024
+                },
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": 48,
+                    "concurrency_step": 8,
+                    "inp_tokens": 1024,
+                    "op_tokens": 1024
+                },
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": 16,
+                    "concurrency_step": 8,
+                    "inp_tokens": 2048,
+                    "op_tokens": 1024
+                }
+            ],
+            "benchmark_tests": [
+                {
+                    "inp_token": 128,
+                    "op_tokens": 1024,
+                    "concurrency": 128
+                },
+                {
+                    "inp_token": 1024,
+                    "op_tokens": 1024,
+                    "concurrency": 76
+                },
+                {
+                    "inp_token": 2048,
+                    "op_tokens": 1024,
+                    "concurrency": 48
+                }
+            ]
+        }
+    },
+    {
+        "model": "tiiuae/Falcon3-7B-Instruct",
+        "dtype": "bfloat16",
+        "test_parameters": {
+            "kv_cache": 128,
+            "sweep_tests": [
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": 8,
+                    "concurrency_step": 4,
+                    "inp_tokens": 128,
+                    "op_tokens": 1024
+                },
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": -8,
+                    "concurrency_step": 4,
+                    "inp_tokens": 1024,
+                    "op_tokens": 1024
+                },
+                {
+                    "tpot_kpi": 100,
+                    "ttft_kpi": 6000,
+                    "start_concurrency": -8,
+                    "concurrency_step": 4,
+                    "inp_tokens": 2048,
+                    "op_tokens": 1024
+                }
+            ],
+            "benchmark_tests": [
+                {
+                    "inp_token": 128,
+                    "op_tokens": 1024,
+                    "concurrency": 24
+                },
+                {
+                    "inp_token": 1024,
+                    "op_tokens": 1024,
+                    "concurrency": 8
+                },
+                {
+                    "inp_token": 2048,
+                    "op_tokens": 1024,
+                    "concurrency": 8
+                }
+            ]
+        }
+    }
 ]
-
