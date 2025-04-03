@@ -15,7 +15,7 @@ NGINX_DIR_BASE = os.getcwd()+"/nginx"
 RESULTS_DIR_BASE = os.getcwd()+"/results/result_"+str(int(time.time()))
 SERVED_MODEL_NAME = "model_in_test"
 HUGGING_FACE_HUB_TOKEN = os.environ.get('HUGGING_FACE_HUB_TOKEN', "")
-PROXY_ENV = f"-e HTTP_PROXY={os.environ.get('HTTP_PROXY', "")} -e HTTPS_PROXY={os.environ.get('HTTPS_PROXY', "")} -e NO_PROXY={os.environ.get('NO_PROXY', "")}"
+PROXY_ENV = f"-e HTTP_PROXY={os.environ.get('HTTP_PROXY', '')} -e HTTPS_PROXY={os.environ.get('HTTPS_PROXY', '')} -e NO_PROXY={os.environ.get('NO_PROXY', '')}"
 
 logging.basicConfig(
         level=logging.DEBUG,
@@ -98,7 +98,7 @@ def run_benchmark(model, token_comb, containers_conf, qpc, is_warmup):
 
 def launch_nginx(containers_conf):
     container_image = containers_conf['nginx']['image']
-    cpus = containers_conf['nginx']['cpus']
+    cpus = containers_conf['nginx']['cpuset']
     logging.info("Launching nginx...")
     docker_command = f"docker run --rm -itd --cpuset-cpus={cpus} -p 8000:80 --network vllm_nginx -v {NGINX_DIR_BASE}/nginx_conf/:/etc/nginx/conf.d/ --name nginx-lb {container_image}"
     run_docker_cmd(docker_command)
@@ -193,6 +193,7 @@ def get_json(fn):
 
 def get_configs(args):
     conf = {}
+    global PROXY_ENV
     numa_fn = f"configs/{args.platform}/numa.json"
     models_fn = f"configs/{args.platform}/models.json"
     containers_fn = f"configs/{args.platform}/containers.json"
@@ -206,8 +207,8 @@ def get_configs(args):
     elif args.sweep:
         conf['test_type'] = 'sweep'
 
-    if args.queries_per_second:
-        conf['qpc'] = args.queries_per_second
+    if args.queries_per_concurrency:
+        conf['qpc'] = args.queries_per_concurrency
     else:
         if args.benchmark:
             conf['qpc'] = 20
@@ -261,11 +262,9 @@ def sweep(test, conf):
                 token_comb['concurrency'] += token_comb['concurrency_step']
 
 
-def main(args):
-    platform = args.platform
-    
+def main(args):    
     #Read all configs
-    conf = get_configs(platform)
+    conf = get_configs(args)
 
     #Download and quantize models
     run_download(conf['containers']['dq']['image'])
@@ -307,5 +306,6 @@ if __name__ == '__main__':
     group.add_argument("-b", "--benchmark", help="start benchmark run", action="store_true")
     group.add_argument("-s", "--sweep", help="start sweeper run", action="store_true")
     args = parser.parse_args()
+    print(args)
     main(args)
 
