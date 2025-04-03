@@ -279,7 +279,7 @@ def main(args):
     #Read all configs
     conf = get_configs(args)
 
-    if args.model and not args.test_parameters:
+    if args.model and (not args.test_parameters or not args.launch_vllm):
         for m in conf['models']:
             if m['model'] == args.model:
                 logging.info(m)
@@ -288,6 +288,15 @@ def main(args):
     if not args.model and args.test_parameters:
         logging.error("Specify the model for test parameters")
         sys.exit(1)    
+
+    if not args.model and args.launch_vllm:
+        logging.error("Specify the model to launch vllm containers")
+        sys.exit(1)
+
+    if args.launch_vllm:
+        launch_vllm(test, conf['numa'], conf['containers'])
+        logging.info("Done launching vllm containers")
+        sys.exit(0)
 
     #Download and quantize models
     run_download(conf['containers']['dq']['image'])
@@ -301,14 +310,16 @@ def main(args):
 
     for test in tests:
         #Launch vllm server for first model (mount models dir and result dir for profile)
-        launch_vllm(test, conf['numa'], conf['containers'])
+        if not args.no_launch_vllm:
+            launch_vllm(test, conf['numa'], conf['containers'])
 
         if args.benchmark:
             benchmark(test, conf)
         elif args.sweep:
             sweep(test, conf)
 
-        stop_vllm(conf['numa'])
+        if not args.no_launch_vllm:
+            stop_vllm(conf['numa'])
 
     logging.info("--- Final test summary ---")
     for test in tests:
@@ -316,12 +327,12 @@ def main(args):
         token_combinations = test['test_parameters']['benchmark_tests'] if args.benchmark else test['test_parameters']['sweep_tests']
         for token_comb in token_combinations:
             logging.info(f"    Inp tokens: {token_comb['inp_tokens']}, Op tokens: {token_comb['op_tokens']}, Concurrency: {token_comb['concurrency']}")
-            logging.info(f"      P90 token tput: {token_comb['p90_op_token_throughput']} tokens/sec")
-            logging.info(f"      P90 Time to First Token {token_comb['p90_ttft']} ms")
-            logging.info(f"      P90 Time per output token {token_comb['p90_tpot']} ms")
-            logging.info(f"      P90 Inter token latency {token_comb['p90_itl']} ms")
-            logging.info(f"      P90 Query latency {token_comb['p90_query_lat']} ms")
-            logging.info(f"      P90 Query throughput {token_comb['p90_query_tput']} queries/sec")
+            logging.info(f"      P90 token tput: {round(token_comb['p90_op_token_throughput'], 2)} tokens/sec")
+            logging.info(f"      P90 Time to First Token {round(token_comb['p90_ttft'], 2)} ms")
+            logging.info(f"      P90 Time per output token {round(token_comb['p90_tpot'], 2)} ms")
+            logging.info(f"      P90 Inter token latency {round(token_comb['p90_itl'], 2)} ms")
+            logging.info(f"      P90 Query latency {round(token_comb['p90_query_lat'], 2)} ms")
+            logging.info(f"      P90 Query throughput {round(token_comb['p90_query_tput'], 2)} queries/sec")
 
 
 if __name__ == '__main__':
@@ -329,6 +340,8 @@ if __name__ == '__main__':
     parser.add_argument("-np", "--no-proxy", help="don't pass proxy env vars to vllm container", action="store_true")
     parser.add_argument("-qpc", "--queries-per-concurrency", type=int, help="Number of queries to be sent for a given concurrency")
     parser.add_argument("-p", "--platform", choices=["spr", "gnr"], help="specify test platform (SPR/GNR)", required=True)
+    parser.add_argument("-l", "--launch-vllm", help="only launches the vllm/nginx containers, user should stop the containers after use with docker stop", action="store_true")
+    parser.add_argument("-nl", "--no-launch-vllm", help="doesn't launch or stop vllm/nginx containers. Use this to run multiple tests on prior launched vllm", action="store_true")
     parser.add_argument("-m", "--model", type=str, help="Specify model (for single model execution). If -tp is not passed, display test parameters of the model and exit")
     parser.add_argument("-tp", "--test-parameters", type=str, help="Specify test parameters in json string format for the specified model")
     group1 = parser.add_mutually_exclusive_group(required=True)
