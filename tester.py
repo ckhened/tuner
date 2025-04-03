@@ -121,7 +121,7 @@ def launch_vllm(test, numa_conf, containers_conf):
         node_cpus = n['node']
         compile_config = 3
         OMP_ENV = "-e KMP_BLOCKTIME=1 -e KMP_TPAUSE=0 -e KMP_SETTINGS=0 -e KMP_FORKJOIN_BARRIER_PATTERN=dist,dist -e KMP_PLAIN_BARRIER_PATTERN=dist,dist " 
-        OMP_ENV += f"-e KMP_REDUCTION_BARRIER_PATTERN=dist,dist -e VLLM_V1_USE=1 -e VLLM_CPU_OMP_THREADS_BIND={cpuset}"
+        OMP_ENV += f"-e KMP_REDUCTION_BARRIER_PATTERN=dist,dist -e VLLM_USE_V1=1 -e VLLM_CPU_OMP_THREADS_BIND={cpuset}"
 
 #        docker_command = f"docker run -d --rm {PROXY_ENV} -p {port}:8000 --cpuset-cpus={cpuset} --cpuset-mems={mem} -e HUGGING_FACE_HUB_TOKEN={HUGGING_FACE_HUB_TOKEN} -e VLLM_CPU_KVCACHE_SPACE={kv_cache} -v {model_dir}:/root/.cache --name {container_name} --ipc=host {container_image} --trust-remote-code --device cpu --dtype {dtype} --tensor-parallel-size 1 --enforce-eager --served-model-name {served_model_name} --model {model}"
         docker_command = f"docker run -d --rm --privileged=True {PROXY_ENV} -p {port}:8000 --network vllm_nginx --cpuset-cpus={node_cpus} --cpuset-mems={mem} {OMP_ENV} -e HUGGING_FACE_HUB_TOKEN={HUGGING_FACE_HUB_TOKEN} -e VLLM_CPU_KVCACHE_SPACE={kv_cache} -v {model_dir}:/root/.cache --name {container_name} --ipc=host {container_image} --trust-remote-code --device cpu --dtype {dtype} --tensor-parallel-size 1 --served-model-name {served_model_name} --model {model} -O{compile_config}"
@@ -150,6 +150,7 @@ def launch_vllm(test, numa_conf, containers_conf):
 
     launch_nginx(containers_conf)
 
+
 def prepare_tests(models_conf):
     tests = []
     os.makedirs(RESULTS_DIR_BASE)
@@ -161,6 +162,18 @@ def prepare_tests(models_conf):
                 'test_parameters': m['test_parameters']}
         tests.append(e)
 
+    return tests
+
+
+def prepare_single_test(model, params):
+    tp = json.loads(params)
+    tests = []
+    results_dir = get_model_res_dir(model)
+    os.makedirs(results_dir)
+    e = {'model': model, 
+                'dtype': tp['dtype'],
+                'test_parameters': tp['test_parameters']}
+    tests.append(e)
     return tests
 
 
@@ -266,11 +279,25 @@ def main(args):
     #Read all configs
     conf = get_configs(args)
 
+    if args.model and not args.test_parameters:
+        for m in conf['models']:
+            if m['model'] == args.model:
+                logging.info(m)
+                sys.exit(0)
+    
+    if not args.model and args.test_parameters:
+        logging.error("Specify the model for test parameters")
+        sys.exit(1)    
+
     #Download and quantize models
     run_download(conf['containers']['dq']['image'])
 
     #Prepare tests, create results dir
-    tests = prepare_tests(conf['models'])
+    tests = []
+    if args.model and args.test_parameters:
+        tests = prepare_single_test(args.model, args.test_parameters)
+    else:
+        tests = prepare_tests(conf['models'])
 
     for test in tests:
         #Launch vllm server for first model (mount models dir and result dir for profile)
@@ -302,10 +329,11 @@ if __name__ == '__main__':
     parser.add_argument("-np", "--no-proxy", help="don't pass proxy env vars to vllm container", action="store_true")
     parser.add_argument("-qpc", "--queries-per-concurrency", type=int, help="Number of queries to be sent for a given concurrency")
     parser.add_argument("-p", "--platform", choices=["spr", "gnr"], help="specify test platform (SPR/GNR)", required=True)
-    group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument("-b", "--benchmark", help="start benchmark run", action="store_true")
-    group.add_argument("-s", "--sweep", help="start sweeper run", action="store_true")
+    parser.add_argument("-m", "--model", type=str, help="Specify model (for single model execution). If -tp is not passed, display test parameters of the model and exit")
+    parser.add_argument("-tp", "--test-parameters", type=str, help="Specify test parameters in json string format for the specified model")
+    group1 = parser.add_mutually_exclusive_group(required=True)
+    group1.add_argument("-b", "--benchmark", help="start benchmark run", action="store_true")
+    group1.add_argument("-s", "--sweep", help="start sweeper run", action="store_true")
     args = parser.parse_args()
-    print(args)
     main(args)
 
