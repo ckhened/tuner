@@ -150,6 +150,9 @@ def launch_vllm(test, numa_conf, containers_conf):
 
     launch_nginx(containers_conf)
 
+    #Warmup run
+    run_benchmark(test['model'], {'inp_tokens': 128, 'op_tokens': 128, 'concurrency': 2}, containers_conf, 1, True)
+
 
 def prepare_tests(models_conf):
     tests = []
