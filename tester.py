@@ -69,7 +69,7 @@ def get_model_res_dir(model):
     return f"{RESULTS_DIR_BASE}/{m}"
 
 
-def run_benchmark(model, token_comb, containers_conf, qpc, is_warmup):
+def run_benchmark(model, token_comb, containers_conf, qpc, iter, is_warmup):
     container_image = containers_conf['benchmark']['image']
     cpus = containers_conf['benchmark']['cpuset']
     concurrency = token_comb['concurrency']
@@ -78,7 +78,7 @@ def run_benchmark(model, token_comb, containers_conf, qpc, is_warmup):
     served_model_name = SERVED_MODEL_NAME
     num_prompts = concurrency * qpc
     model_dir = f"{MODEL_DIR_BASE}"
-    results_dir = get_model_res_dir(model) + f"/I{inp_tokens}-O{op_tokens}"
+    results_dir = get_model_res_dir(model) + f"/I{inp_tokens}-O{op_tokens}-iter{iter}"
     if not os.path.exists(results_dir):
         os.makedirs(results_dir)
     results_file = f"result-C{concurrency}.json"
@@ -94,6 +94,14 @@ def run_benchmark(model, token_comb, containers_conf, qpc, is_warmup):
 
     run_docker_cmd(docker_command)
     return results_file_host
+
+
+def run_benchmark_iters(model, token_comb, containers_conf, qpc, iterations, is_warmup):
+    result_files = []
+    for i in range(iterations):
+        result_files.append(run_benchmark(model, token_comb, containers_conf, qpc, i+1, is_warmup))
+    
+    return result_files
     
 
 def launch_nginx(containers_conf):
@@ -236,8 +244,31 @@ def get_configs(args):
         conf['proxy'] = False
     else:
         conf['proxy'] = True
+    
+    if args.iterations:
+        conf['iterations'] = args.iterations
+    else:
+        conf['iterations'] = 1
 
     return conf
+
+
+def get_best_result(res_files, res_param, factor):
+    best_res = 0.0
+
+    if factor == min:
+        best_res = float('inf')
+    else:
+        best_res = -float('inf')
+    
+    best_res_file = ""
+    for f in res_files:
+        r = get_json(f)
+        best_res = factor(r[res_param], best_res)
+        if best_res == r[res_param]:
+            best_res_file = f
+    
+    return get_json(best_res_file)
 
 
 def benchmark(test, conf):
@@ -245,8 +276,8 @@ def benchmark(test, conf):
     qpc = conf['qpc']
     token_combinations = test['test_parameters']['benchmark_tests']
     for token_comb in token_combinations:
-        res_file = run_benchmark(test['model'], token_comb, containers_conf, qpc, False)
-        results = get_json(res_file)
+        res_files = run_benchmark(test['model'], token_comb, containers_conf, qpc, False)
+        results = get_best_result(res_files, 'p90_ttft_ms', min)
         token_comb['p90_op_token_throughput'] = results['output_throughput']
         token_comb['p90_ttft'] = results['p90_ttft_ms']
         token_comb['p90_tpot'] = results['p90_tpot_ms']
@@ -350,14 +381,15 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="LLM Benchmarking automation, Specify platform and test type")
     parser.add_argument("-np", "--no-proxy", help="don't pass proxy env vars to vllm container", action="store_true")
     parser.add_argument("-qpc", "--queries-per-concurrency", type=int, help="Number of queries to be sent for a given concurrency")
+    parser.add_argument("-i", "--iterations", type=int, help="Number of iterations to run per test")
     parser.add_argument("-p", "--platform", choices=["spr", "gnr"], help="specify test platform (SPR/GNR)", required=True)
-    parser.add_argument("-l", "--launch-vllm", help="only launches the vllm/nginx containers, user should stop the containers after use with docker stop", action="store_true")
     parser.add_argument("-nl", "--no-launch-vllm", help="doesn't launch or stop vllm/nginx containers. Use this to run multiple tests on prior launched vllm", action="store_true")
     parser.add_argument("-m", "--model", type=str, help="Specify model (for single model execution). If -tp is not passed, display test parameters of the model and exit")
     parser.add_argument("-tp", "--test-parameters", type=str, help="Specify test parameters in json string format for the specified model")
     group1 = parser.add_mutually_exclusive_group(required=True)
     group1.add_argument("-b", "--benchmark", help="start benchmark run", action="store_true")
     group1.add_argument("-s", "--sweep", help="start sweeper run", action="store_true")
+    group1.add_argument("-l", "--launch-vllm", help="only launches the vllm/nginx containers, user should stop the containers after use with docker stop", action="store_true")
     args = parser.parse_args()
     main(args)
 
