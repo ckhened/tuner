@@ -79,7 +79,7 @@ def run_benchmark(model, token_comb, containers_conf, qpc, iter, is_warmup):
     num_prompts = concurrency * qpc
     model_dir = f"{MODEL_DIR_BASE}"
     results_dir = get_model_res_dir(model) + f"/I{inp_tokens}-O{op_tokens}-iter{iter}"
-    if not os.path.exists(results_dir):
+    if not os.path.exists(results_dir) and not is_warmup:
         os.makedirs(results_dir)
     results_file = f"result-C{concurrency}.json"
     results_file_container = f"/results/{results_file}"
@@ -253,18 +253,13 @@ def get_configs(args):
     return conf
 
 
-def get_best_result(res_files, res_param, factor):
-    best_res = 0.0
-
-    if factor == min:
-        best_res = float('inf')
-    else:
-        best_res = -float('inf')
-    
+def get_best_result(res_files, res_param, compare):
+    best_res = float('inf') if factor == min else -float('inf')
     best_res_file = ""
+
     for f in res_files:
         r = get_json(f)
-        best_res = factor(r[res_param], best_res)
+        best_res = compare(r[res_param], best_res)
         if best_res == r[res_param]:
             best_res_file = f
     
