@@ -30,7 +30,7 @@ def get_result_files(directory):
 
 
 def get_highest_concurrency_file(files):
-    t = [(int(f[f.rfind('C')+1:f.rfind('.')]), f) for f in files]
+    t = [(int(f[f.rfind('C')+1:f.rfind('-')]), f) for f in files]
     return max(t)
 
 
