@@ -69,7 +69,7 @@ def get_model_res_dir(model):
     return f"{RESULTS_DIR_BASE}/{m}"
 
 
-def run_benchmark(model, token_comb, containers_conf, qpc, iter, is_warmup):
+def run_benchmark(model, token_comb, containers_conf, qpc, is_warmup, it=1):
     container_image = containers_conf['benchmark']['image']
     cpus = containers_conf['benchmark']['cpuset']
     concurrency = token_comb['concurrency']
@@ -78,10 +78,10 @@ def run_benchmark(model, token_comb, containers_conf, qpc, iter, is_warmup):
     served_model_name = SERVED_MODEL_NAME
     num_prompts = concurrency * qpc
     model_dir = f"{MODEL_DIR_BASE}"
-    results_dir = get_model_res_dir(model) + f"/I{inp_tokens}-O{op_tokens}-iter{iter}"
+    results_dir = get_model_res_dir(model) + f"/I{inp_tokens}-O{op_tokens}"
     if not os.path.exists(results_dir) and not is_warmup:
         os.makedirs(results_dir)
-    results_file = f"result-C{concurrency}.json"
+    results_file = f"result-C{concurrency}-iter{it}.json"
     results_file_container = f"/results/{results_file}"
     results_file_host = f"{results_dir}/{results_file}"
 
@@ -96,10 +96,11 @@ def run_benchmark(model, token_comb, containers_conf, qpc, iter, is_warmup):
     return results_file_host
 
 
-def run_benchmark_iters(model, token_comb, containers_conf, qpc, iterations, is_warmup):
+def run_benchmark_iters(model, token_comb, containers_conf, qpc, iterations):
     result_files = []
     for i in range(iterations):
-        result_files.append(run_benchmark(model, token_comb, containers_conf, qpc, i+1, is_warmup))
+        logging.info(f"Starting benchmark for - concurrency: {token_comb['concurrency']}, qpc: {qpc}, iteration: {i+1}")
+        result_files.append(run_benchmark(model, token_comb, containers_conf, qpc, False, it=i+1))
     
     return result_files
     
@@ -254,7 +255,7 @@ def get_configs(args):
 
 
 def get_best_result(res_files, res_param, compare):
-    best_res = float('inf') if factor == min else -float('inf')
+    best_res = float('inf') if compare == min else -float('inf')
     best_res_file = ""
 
     for f in res_files:
@@ -271,8 +272,8 @@ def benchmark(test, conf):
     qpc = conf['qpc']
     token_combinations = test['test_parameters']['benchmark_tests']
     for token_comb in token_combinations:
-        res_files = run_benchmark(test['model'], token_comb, containers_conf, qpc, False)
-        results = get_best_result(res_files, 'p90_ttft_ms', min)
+        res_files = run_benchmark_iters(test['model'], token_comb, containers_conf, qpc, conf['iterations'])
+        results = get_best_result(res_files, 'p90_tpot_ms', min)
         token_comb['p90_op_token_throughput'] = results['output_throughput']
         token_comb['p90_ttft'] = results['p90_ttft_ms']
         token_comb['p90_tpot'] = results['p90_tpot_ms']
