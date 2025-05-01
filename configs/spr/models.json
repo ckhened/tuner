@@ -1,200 +1,69 @@
 [
-    {
-        "model": "Qwen/Qwen2.5-1.5B-Instruct",
-        "dtype": "bfloat16",
-        "test_parameters": {
-            "kv_cache": 32,
-            "sweep_tests": [
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": 288,
-                    "concurrency_step": 8,
-                    "inp_tokens": 128,
-                    "op_tokens": 1024
-                },
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": 160,
-                    "concurrency_step": 8,
-                    "inp_tokens": 1024,
-                    "op_tokens": 1024
-                },
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": 64,
-                    "concurrency_step": 8,
-                    "inp_tokens": 2048,
-                    "op_tokens": 1024
-                }
-            ],
-            "benchmark_tests": [
-                {
-                    "inp_tokens": 128,
-                    "op_tokens": 1024,
-                    "concurrency": 320
-                },
-                {
-                    "inp_tokens": 1024,
-                    "op_tokens": 1024,
-                    "concurrency": 184
-                },
-                {
-                    "inp_tokens": 2048,
-                    "op_tokens": 1024,
-                    "concurrency": 96
-                }
-            ]
-        }
-    },
-    {
-        "model": "Qwen/Qwen2.5-7B-Instruct",
-        "dtype": "bfloat16",
-        "test_parameters": {
-            "kv_cache": 128,
-            "sweep_tests": [
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": 0,
-                    "concurrency_step": 4,
-                    "inp_tokens": 128,
-                    "op_tokens": 1024
-                },
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": -8,
-                    "concurrency_step": 4,
-                    "inp_tokens": 1024,
-                    "op_tokens": 1024
-                },
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": -8,
-                    "concurrency_step": 4,
-                    "inp_tokens": 2048,
-                    "op_tokens": 1024
-                }
-            ],
-            "benchmark_tests": [
-                {
-                    "inp_tokens": 128,
-                    "op_tokens": 1024,
-                    "concurrency": 16
-                },
-                {
-                    "inp_tokens": 1024,
-                    "op_tokens": 1024,
-                    "concurrency": 8
-                },
-                {
-                    "inp_tokens": 2048,
-                    "op_tokens": 1024,
-                    "concurrency": 6
-                }
-            ]
-        }
-    },
+    
     {
         "model": "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
         "dtype": "bfloat16",
         "test_parameters": {
-            "kv_cache": 32,
-            "sweep_tests": [
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": 288,
-                    "concurrency_step": 8,
-                    "inp_tokens": 128,
-                    "op_tokens": 1024
-                },
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": 160,
-                    "concurrency_step": 8,
-                    "inp_tokens": 1024,
-                    "op_tokens": 1024
-                },
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": 64,
-                    "concurrency_step": 8,
-                    "inp_tokens": 2048,
-                    "op_tokens": 1024
-                }
-            ],
+            "kv_cache": 32,            
             "benchmark_tests": [
                 {
-                    "inp_tokens": 128,
-                    "op_tokens": 1024,
-                    "concurrency": 312
+                    "inp_tokens": 100,
+                    "op_tokens": 300,
+                    "concurrency": 1
                 },
                 {
-                    "inp_tokens": 1024,
-                    "op_tokens": 1024,
-                    "concurrency": 180
+                    "inp_tokens": 1000,
+                    "op_tokens": 1000,
+                    "concurrency": 1
                 },
                 {
-                    "inp_tokens": 2048,
-                    "op_tokens": 1024,
-                    "concurrency": 88
+                    "inp_tokens": 10000,
+                    "op_tokens": 1500,
+                    "concurrency": 1
+                },
+                {
+                    "inp_tokens": 100000,
+                    "op_tokens": 2000,
+                    "concurrency": 1
+                },
+                {
+                    "inp_tokens": 1000,
+                    "op_tokens": 1000,
+                    "concurrency": 10
                 }
             ]
         }
     },
     {
-        "model": "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B",
+        "model": "deepseek-ai/DeepSeek-R1-Distill-Llama-8B",
         "dtype": "bfloat16",
         "test_parameters": {
             "kv_cache": 64,
-            "sweep_tests": [
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": 16,
-                    "concurrency_step": 4,
-                    "inp_tokens": 128,
-                    "op_tokens": 1024
-                },
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": -8,
-                    "concurrency_step": 4,
-                    "inp_tokens": 1024,
-                    "op_tokens": 1024
-                },
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": -8,
-                    "concurrency_step": 4,
-                    "inp_tokens": 2048,
-                    "op_tokens": 1024
-                }
-            ],
             "benchmark_tests": [
                 {
-                    "inp_tokens": 128,
-                    "op_tokens": 1024,
-                    "concurrency": 28
+                    "inp_tokens": 100,
+                    "op_tokens": 300,
+                    "concurrency": 1
                 },
                 {
-                    "inp_tokens": 1024,
-                    "op_tokens": 1024,
-                    "concurrency": 8
+                    "inp_tokens": 1000,
+                    "op_tokens": 1000,
+                    "concurrency": 1
                 },
                 {
-                    "inp_tokens": 2048,
-                    "op_tokens": 1024,
-                    "concurrency": 8
+                    "inp_tokens": 10000,
+                    "op_tokens": 1500,
+                    "concurrency": 1
+                },
+                {
+                    "inp_tokens": 100000,
+                    "op_tokens": 2000,
+                    "concurrency": 1
+                },
+                {
+                    "inp_tokens": 1000,
+                    "op_tokens": 1000,
+                    "concurrency": 10
                 }
             ]
         }
@@ -204,47 +73,21 @@
         "dtype": "bfloat16",
         "test_parameters": {
             "kv_cache": 192,
-            "sweep_tests": [
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": -4,
-                    "concurrency_step": 2,
-                    "inp_tokens": 128,
-                    "op_tokens": 1024
-                },
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": -4,
-                    "concurrency_step": 2,
-                    "inp_tokens": 1024,
-                    "op_tokens": 1024
-                },
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": -4,
-                    "concurrency_step": 2,
-                    "inp_tokens": 2048,
-                    "op_tokens": 1024
-                }
-            ],
             "benchmark_tests": [
                 {
-                    "inp_tokens": 128,
-                    "op_tokens": 1024,
-                    "concurrency": 2
+                    "inp_tokens": 100,
+                    "op_tokens": 300,
+                    "concurrency": 1
                 },
                 {
-                    "inp_tokens": 1024,
-                    "op_tokens": 1024,
-                    "concurrency": 2
+                    "inp_tokens": 1000,
+                    "op_tokens": 1000,
+                    "concurrency": 1
                 },
                 {
-                    "inp_tokens": 2048,
-                    "op_tokens": 1024,
-                    "concurrency": 2
+                    "inp_tokens": 1000,
+                    "op_tokens": 1000,
+                    "concurrency": 10
                 }
             ]
         }
@@ -254,47 +97,21 @@
         "dtype": "bfloat16",
         "test_parameters": {
             "kv_cache": 128,
-            "sweep_tests": [
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": -8,
-                    "concurrency_step": 4,
-                    "inp_tokens": 128,
-                    "op_tokens": 1024
-                },
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": -8,
-                    "concurrency_step": 4,
-                    "inp_tokens": 1024,
-                    "op_tokens": 1024
-                },
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": -8,
-                    "concurrency_step": 4,
-                    "inp_tokens": 2048,
-                    "op_tokens": 1024
-                }
-            ],
             "benchmark_tests": [
                 {
-                    "inp_tokens": 128,
-                    "op_tokens": 1024,
-                    "concurrency": 6
+                    "inp_tokens": 100,
+                    "op_tokens": 300,
+                    "concurrency": 1
                 },
                 {
-                    "inp_tokens": 1024,
-                    "op_tokens": 1024,
-                    "concurrency": 6
+                    "inp_tokens": 1000,
+                    "op_tokens": 1000,
+                    "concurrency": 1
                 },
                 {
-                    "inp_tokens": 2048,
-                    "op_tokens": 1024,
-                    "concurrency": 6
+                    "inp_tokens": 1000,
+                    "op_tokens": 1000,
+                    "concurrency": 10
                 }
             ]
         }
@@ -304,47 +121,31 @@
         "dtype": "bfloat16",
         "test_parameters": {
             "kv_cache": 128,
-            "sweep_tests": [
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": -8,
-                    "concurrency_step": 4,
-                    "inp_tokens": 128,
-                    "op_tokens": 1024
-                },
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": -8,
-                    "concurrency_step": 4,
-                    "inp_tokens": 1024,
-                    "op_tokens": 1024
-                },
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": -8,
-                    "concurrency_step": 4,
-                    "inp_tokens": 2048,
-                    "op_tokens": 1024
-                }
-            ],
             "benchmark_tests": [
                 {
-                    "inp_tokens": 128,
-                    "op_tokens": 1024,
-                    "concurrency": 6
+                    "inp_tokens": 100,
+                    "op_tokens": 300,
+                    "concurrency": 1
                 },
                 {
-                    "inp_tokens": 1024,
-                    "op_tokens": 1024,
-                    "concurrency": 6
+                    "inp_tokens": 1000,
+                    "op_tokens": 1000,
+                    "concurrency": 1
                 },
                 {
-                    "inp_tokens": 2048,
-                    "op_tokens": 1024,
-                    "concurrency": 6
+                    "inp_tokens": 10000,
+                    "op_tokens": 1500,
+                    "concurrency": 1
+                },
+                {
+                    "inp_tokens": 100000,
+                    "op_tokens": 2000,
+                    "concurrency": 1
+                },
+                {
+                    "inp_tokens": 1000,
+                    "op_tokens": 1000,
+                    "concurrency": 10
                 }
             ]
         }
@@ -354,47 +155,31 @@
         "dtype": "bfloat16",
         "test_parameters": {
             "kv_cache": 32,
-            "sweep_tests": [
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": 288,
-                    "concurrency_step": 8,
-                    "inp_tokens": 128,
-                    "op_tokens": 1024
-                },
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": 160,
-                    "concurrency_step": 8,
-                    "inp_tokens": 1024,
-                    "op_tokens": 1024
-                },
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": 64,
-                    "concurrency_step": 8,
-                    "inp_tokens": 2048,
-                    "op_tokens": 1024
-                }
-            ],
             "benchmark_tests": [
                 {
-                    "inp_tokens": 128,
-                    "op_tokens": 1024,
-                    "concurrency": 316
+                    "inp_tokens": 100,
+                    "op_tokens": 300,
+                    "concurrency": 1
                 },
                 {
-                    "inp_tokens": 1024,
-                    "op_tokens": 1024,
-                    "concurrency": 184
+                    "inp_tokens": 1000,
+                    "op_tokens": 1000,
+                    "concurrency": 1
                 },
                 {
-                    "inp_tokens": 2048,
-                    "op_tokens": 1024,
-                    "concurrency": 96
+                    "inp_tokens": 10000,
+                    "op_tokens": 1500,
+                    "concurrency": 1
+                },
+                {
+                    "inp_tokens": 100000,
+                    "op_tokens": 2000,
+                    "concurrency": 1
+                },
+                {
+                    "inp_tokens": 1000,
+                    "op_tokens": 1000,
+                    "concurrency": 10
                 }
             ]
         }
@@ -404,247 +189,31 @@
         "dtype": "bfloat16",
         "test_parameters": {
             "kv_cache": 64,
-            "sweep_tests": [
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": 64,
-                    "concurrency_step": 8,
-                    "inp_tokens": 128,
-                    "op_tokens": 1024
-                },
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": 16,
-                    "concurrency_step": 8,
-                    "inp_tokens": 1024,
-                    "op_tokens": 1024
-                },
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": 0,
-                    "concurrency_step": 8,
-                    "inp_tokens": 2048,
-                    "op_tokens": 1024
-                }
-            ],
             "benchmark_tests": [
                 {
-                    "inp_tokens": 128,
-                    "op_tokens": 1024,
-                    "concurrency": 96
+                    "inp_tokens": 100,
+                    "op_tokens": 300,
+                    "concurrency": 1
                 },
                 {
-                    "inp_tokens": 1024,
-                    "op_tokens": 1024,
-                    "concurrency": 48
+                    "inp_tokens": 1000,
+                    "op_tokens": 1000,
+                    "concurrency": 1
                 },
                 {
-                    "inp_tokens": 2048,
-                    "op_tokens": 1024,
-                    "concurrency": 28
-                }
-            ]
-        }
-    },
-    {
-        "model": "tiiuae/Falcon3-10B-Instruct",
-        "dtype": "bfloat16",
-        "test_parameters": {
-            "kv_cache": 192,
-            "sweep_tests": [
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": -4,
-                    "concurrency_step": 2,
-                    "inp_tokens": 128,
-                    "op_tokens": 1024
+                    "inp_tokens": 10000,
+                    "op_tokens": 1500,
+                    "concurrency": 1
                 },
                 {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": -4,
-                    "concurrency_step": 2,
-                    "inp_tokens": 1024,
-                    "op_tokens": 1024
+                    "inp_tokens": 100000,
+                    "op_tokens": 2000,
+                    "concurrency": 1
                 },
                 {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": -4,
-                    "concurrency_step": 2,
-                    "inp_tokens": 2048,
-                    "op_tokens": 1024
-                }
-            ],
-            "benchmark_tests": [
-                {
-                    "inp_tokens": 128,
-                    "op_tokens": 1024,
-                    "concurrency": 2
-                },
-                {
-                    "inp_tokens": 1024,
-                    "op_tokens": 1024,
-                    "concurrency": 2
-                },
-                {
-                    "inp_tokens": 2048,
-                    "op_tokens": 1024,
-                    "concurrency": 2
-                }
-            ]
-        }
-    },
-    {
-        "model": "tiiuae/Falcon3-1B-Instruct",
-        "dtype": "bfloat16",
-        "test_parameters": {
-            "kv_cache": 32,
-            "sweep_tests": [
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": 256,
-                    "concurrency_step": 8,
-                    "inp_tokens": 128,
-                    "op_tokens": 1024
-                },
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": 96,
-                    "concurrency_step": 8,
-                    "inp_tokens": 1024,
-                    "op_tokens": 1024
-                },
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": 64,
-                    "concurrency_step": 8,
-                    "inp_tokens": 2048,
-                    "op_tokens": 1024
-                }
-            ],
-            "benchmark_tests": [
-                {
-                    "inp_tokens": 128,
-                    "op_tokens": 1024,
-                    "concurrency": 288
-                },
-                {
-                    "inp_tokens": 1024,
-                    "op_tokens": 1024,
-                    "concurrency": 128
-                },
-                {
-                    "inp_tokens": 2048,
-                    "op_tokens": 1024,
-                    "concurrency": 88
-                }
-            ]
-        }
-    },
-    {
-        "model": "tiiuae/Falcon3-3B-Instruct",
-        "dtype": "bfloat16",
-        "test_parameters": {
-            "kv_cache": 64,
-            "sweep_tests": [
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": 96,
-                    "concurrency_step": 8,
-                    "inp_tokens": 128,
-                    "op_tokens": 1024
-                },
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": 48,
-                    "concurrency_step": 8,
-                    "inp_tokens": 1024,
-                    "op_tokens": 1024
-                },
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": 16,
-                    "concurrency_step": 8,
-                    "inp_tokens": 2048,
-                    "op_tokens": 1024
-                }
-            ],
-            "benchmark_tests": [
-                {
-                    "inp_tokens": 128,
-                    "op_tokens": 1024,
-                    "concurrency": 128
-                },
-                {
-                    "inp_tokens": 1024,
-                    "op_tokens": 1024,
-                    "concurrency": 76
-                },
-                {
-                    "inp_tokens": 2048,
-                    "op_tokens": 1024,
-                    "concurrency": 48
-                }
-            ]
-        }
-    },
-    {
-        "model": "tiiuae/Falcon3-7B-Instruct",
-        "dtype": "bfloat16",
-        "test_parameters": {
-            "kv_cache": 128,
-            "sweep_tests": [
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": 8,
-                    "concurrency_step": 4,
-                    "inp_tokens": 128,
-                    "op_tokens": 1024
-                },
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": -8,
-                    "concurrency_step": 4,
-                    "inp_tokens": 1024,
-                    "op_tokens": 1024
-                },
-                {
-                    "tpot_kpi": 100,
-                    "ttft_kpi": 6000,
-                    "start_concurrency": -8,
-                    "concurrency_step": 4,
-                    "inp_tokens": 2048,
-                    "op_tokens": 1024
-                }
-            ],
-            "benchmark_tests": [
-                {
-                    "inp_tokens": 128,
-                    "op_tokens": 1024,
-                    "concurrency": 24
-                },
-                {
-                    "inp_tokens": 1024,
-                    "op_tokens": 1024,
-                    "concurrency": 8
-                },
-                {
-                    "inp_tokens": 2048,
-                    "op_tokens": 1024,
-                    "concurrency": 8
+                    "inp_tokens": 1000,
+                    "op_tokens": 1000,
+                    "concurrency": 10
                 }
             ]
         }
